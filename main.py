@@ -1,9 +1,37 @@
 import json
 import os
+import platform
+import pyfiglet
+from colorama import Fore, Back, Style, init
+
+# Initialize colorama
+init(autoreset=True)
 
 # Define the file paths
 bulk_input_file = 'bulk_input.txt'  # File for uploading data
 safeum_file = 'safeum.json'  # File to store data
+
+# Function to clear the terminal screen
+def clear_screen():
+    # Check the operating system and execute the appropriate command to clear the screen
+    system_name = platform.system().lower()
+    
+    if system_name == 'windows':
+        os.system('cls')  # For Windows
+    else:
+        os.system('clear')  # For Linux/Termux/macOS
+
+# Function to display the banner
+def display_banner():
+    banner = pyfiglet.Figlet(font="small")
+    banner_text = banner.renderText("DARK DEVIL")
+    
+    terminal_width = os.get_terminal_size().columns
+    centered_banner = '\n'.join(line.center(terminal_width) for line in banner_text.splitlines())
+    
+    print(Fore.CYAN + centered_banner)
+    author_line = f"{Fore.YELLOW}Author/Github: {Style.RESET_ALL}{Fore.GREEN}@AbdurRehman1129"
+    print(author_line.center(terminal_width))
 
 # Check if the safeum.json file exists, if not create an empty one
 if not os.path.exists(safeum_file):
@@ -24,16 +52,16 @@ def save_data(data):
 def display_account_info():
     data = load_data()
     if not data:
-        print("No account info stored.")
+        print(Fore.RED + "No account info stored.")
     else:
         for username, phone in data.items():
-            print(f"Username: {username}, Phone Number: {phone}")
+            print(f"{Fore.GREEN}Username: {Style.RESET_ALL}{username} {Fore.YELLOW}Phone Number: {Style.RESET_ALL}{phone}")
 
 # Function to upload bulk data from the bulk_input.txt file
 def upload_bulk_data():
     # Check if the bulk_input.txt file exists
     if not os.path.exists(bulk_input_file):
-        print(f"{bulk_input_file} not found, please create this file with the data.")
+        print(Fore.RED + f"{bulk_input_file} not found, please create this file with the data.")
         return
 
     data = load_data()
@@ -44,62 +72,83 @@ def upload_bulk_data():
             line = line.strip()
             if '@' in line:
                 username, phone = line.split('@', 1)
-                data[username] = phone
+                data[username] = phone.replace(" ", "")  # Remove spaces from phone numbers
             else:
-                print(f"Skipping invalid line: {line}")
+                print(Fore.RED + f"Skipping invalid line: {line}")
 
     save_data(data)
-    print(f"Bulk data from {bulk_input_file} has been uploaded successfully!")
+    print(Fore.GREEN + f"Bulk data from {bulk_input_file} has been uploaded successfully!")
 
 # Function to search by phone number(s)
 def search_by_phone():
     data = load_data()
     
     # Ask user for phone numbers
-    phone_numbers_input = input("Enter phone numbers separated by commas: ").strip()
-    phone_numbers = [phone.strip() for phone in phone_numbers_input.split(',')]
+    phone_numbers_input = input(Fore.YELLOW + "Enter phone numbers separated by commas: ").strip()
+    phone_numbers = [phone.strip().replace(" ", "") for phone in phone_numbers_input.split(',')]
 
     found = False
     for phone_number in phone_numbers:
         # Search for the phone number in the data
         for username, phone in data.items():
             if phone == phone_number:
-                print(f"Phone number {phone_number} is associated with username: {username}")
+                print(f"{Fore.GREEN}Phone number {phone_number} is associated with username: {Style.RESET_ALL}{username}")
                 found = True
                 break
         if not found:
-            print(f"No account found for phone number {phone_number}")
+            print(Fore.RED + f"No account found for phone number {phone_number}")
+
+# Function to manually enter username and phone number
+def manual_entry():
+    username = input(Fore.YELLOW + "Enter Username: ").strip()
+    phone = input(Fore.YELLOW + "Enter Phone Number (with no spaces): ").strip().replace(" ", "")
+    
+    # Validate phone number (make sure it's numeric)
+    if not phone.isdigit():
+        print(Fore.RED + "Invalid phone number. Please enter a valid number.")
+        return
+    
+    data = load_data()
+    data[username] = phone
+    save_data(data)
+    print(Fore.GREEN + "Account info added successfully!")
 
 # Main function to display menu
 def main():
     while True:
-        print("\nSafeum Account Info")
-        print("1. Display Account Info")
-        print("2. Upload Bulk Account Info (from bulk_input.txt)")
-        print("3. Search by Phone Number")
-        print("4. Exit")
-        choice = input("Choose an option (1/2/3/4): ")
-
-        if choice == '1':
-            display_account_info()
-        elif choice == '2':
-            upload_bulk_data()
-        elif choice == '3':
-            search_by_phone()
-        elif choice == '4':
-            print("Goodbye!")
-            break
-        else:
-            print("Invalid choice, please try again.")
+        clear_screen()  # Clear screen at the beginning of each run
+        display_banner()  # Display the banner
+        print(Fore.CYAN + "\nSafeum Account Info")
+        print(Fore.MAGENTA + "1. Display Account Info")
+        print(Fore.GREEN + "2. Upload Bulk Account Info (from bulk_input.txt)")
+        print(Fore.YELLOW + "3. Search by Phone Number")
+        print(Fore.BLUE + "4. Manually Enter Account Info")
+        print(Fore.RED + "5. Exit")
+        
+        try:
+            choice = input(Fore.WHITE + "Choose an option (1/2/3/4/5): ").strip()
+            
+            if choice == '1':
+                display_account_info()
+            elif choice == '2':
+                upload_bulk_data()
+            elif choice == '3':
+                search_by_phone()
+            elif choice == '4':
+                manual_entry()
+            elif choice == '5':
+                print(Fore.GREEN + "Goodbye!")
+                break
+            else:
+                print(Fore.RED + "Invalid choice, please try again.")
+        except Exception as e:
+            print(Fore.RED + f"An error occurred: {e}")
 
 if __name__ == "__main__":
-    # Create the bulk_input.txt file if it doesn't exist
+    # Remove any initial example entry from the bulk_input.txt
     if not os.path.exists(bulk_input_file):
         with open(bulk_input_file, 'w') as f:
-            f.write("lfc19wplxzgxo9ct1@994409446723\n")  # Example entry
-            f.write("iicr330taa7kj7pml@994405909121\n")  # Example entry
-            f.write("awvrd9ep3r6nm1dts@994408701494\n")  # Example entry
-            print(f"{bulk_input_file} created. Add your account data in this file.")
+            pass  # Leave it empty for the user to upload data
 
     # Start the main program
     main()
