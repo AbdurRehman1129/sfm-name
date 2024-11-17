@@ -56,12 +56,14 @@ def display_account_info():
     else:
         for username, phone in data.items():
             print(f"{Fore.GREEN}Username: {Style.RESET_ALL}{username} {Fore.YELLOW}Phone Number: {Style.RESET_ALL}{phone}")
+    input(Fore.WHITE + "\nPress Enter to return to the menu...")  # Wait for user to continue
 
 # Function to upload bulk data from the bulk_input.txt file
 def upload_bulk_data():
     # Check if the bulk_input.txt file exists
     if not os.path.exists(bulk_input_file):
         print(Fore.RED + f"{bulk_input_file} not found, please create this file with the data.")
+        input(Fore.WHITE + "\nPress Enter to return to the menu...")  # Wait for user to continue
         return
 
     data = load_data()
@@ -78,6 +80,7 @@ def upload_bulk_data():
 
     save_data(data)
     print(Fore.GREEN + f"Bulk data from {bulk_input_file} has been uploaded successfully!")
+    input(Fore.WHITE + "\nPress Enter to return to the menu...")  # Wait for user to continue
 
 # Function to search by phone number(s)
 def search_by_phone():
@@ -97,6 +100,8 @@ def search_by_phone():
                 break
         if not found:
             print(Fore.RED + f"No account found for phone number {phone_number}")
+    
+    input(Fore.WHITE + "\nPress Enter to return to the menu...")  # Wait for user to continue
 
 # Function to manually enter username and phone number
 def manual_entry():
@@ -106,24 +111,26 @@ def manual_entry():
     # Validate phone number (make sure it's numeric)
     if not phone.isdigit():
         print(Fore.RED + "Invalid phone number. Please enter a valid number.")
+        input(Fore.WHITE + "\nPress Enter to return to the menu...")  # Wait for user to continue
         return
     
     data = load_data()
     data[username] = phone
     save_data(data)
     print(Fore.GREEN + "Account info added successfully!")
+    input(Fore.WHITE + "\nPress Enter to return to the menu...")  # Wait for user to continue
 
 # Main function to display menu
 def main():
     while True:
         clear_screen()  # Clear screen at the beginning of each run
         display_banner()  # Display the banner
-        print(Fore.CYAN + "\nSafeum Account Info")
+        print(Fore.MAGENTA + "Safeum Account Info")
         print(Fore.MAGENTA + "1. Display Account Info")
-        print(Fore.GREEN + "2. Upload Bulk Account Info (from bulk_input.txt)")
-        print(Fore.YELLOW + "3. Search by Phone Number")
-        print(Fore.BLUE + "4. Manually Enter Account Info")
-        print(Fore.RED + "5. Exit")
+        print(Fore.MAGENTA + "2. Upload Bulk Account Info (from bulk_input.txt)")
+        print(Fore.MAGENTA + "3. Search by Phone Number")
+        print(Fore.MAGENTA + "4. Manually Enter Account Info")
+        print(Fore.MAGENTA + "5. Exit")
         
         try:
             choice = input(Fore.WHITE + "Choose an option (1/2/3/4/5): ").strip()
@@ -141,8 +148,10 @@ def main():
                 break
             else:
                 print(Fore.RED + "Invalid choice, please try again.")
+                input(Fore.WHITE + "\nPress Enter to return to the menu...")  # Wait for user to continue
         except Exception as e:
             print(Fore.RED + f"An error occurred: {e}")
+            input(Fore.WHITE + "\nPress Enter to return to the menu...")  # Wait for user to continue
 
 if __name__ == "__main__":
     # Remove any initial example entry from the bulk_input.txt
