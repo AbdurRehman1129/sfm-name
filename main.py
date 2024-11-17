@@ -103,37 +103,72 @@ def search_by_phone():
     
     input(Fore.WHITE + "\nPress Enter to return to the menu...")  # Wait for user to continue
 
+# Function to remove account data (by username or phone number)
+def remove_data():
+    data = load_data()
+    
+    # Ask user for username or phone number to remove
+    remove_input = input(Fore.YELLOW + "Enter Username or Phone Number to remove: ").strip()
+    
+    # Find and remove the account by username
+    if remove_input in data:
+        del data[remove_input]
+        save_data(data)
+        print(Fore.GREEN + f"Account with username/phone number {remove_input} has been removed.")
+    else:
+        # Check if any phone number matches
+        found = False
+        for username, phone in data.items():
+            if phone == remove_input:
+                del data[username]  # Remove account by username if phone number matches
+                save_data(data)
+                print(Fore.GREEN + f"Account with phone number {remove_input} has been removed.")
+                found = True
+                break
+        if not found:
+            print(Fore.RED + "No account found with the provided username/phone number.")
+    
+    input(Fore.WHITE + "\nPress Enter to return to the menu...")  # Wait for user to continue
+
 # Function to manually enter username and phone number
 def manual_entry():
-    username = input(Fore.YELLOW + "Enter Username: ").strip()
-    phone = input(Fore.YELLOW + "Enter Phone Number (with no spaces): ").strip().replace(" ", "")
-    
-    # Validate phone number (make sure it's numeric)
-    if not phone.isdigit():
-        print(Fore.RED + "Invalid phone number. Please enter a valid number.")
-        input(Fore.WHITE + "\nPress Enter to return to the menu...")  # Wait for user to continue
-        return
-    
     data = load_data()
-    data[username] = phone
-    save_data(data)
-    print(Fore.GREEN + "Account info added successfully!")
-    input(Fore.WHITE + "\nPress Enter to return to the menu...")  # Wait for user to continue
+    
+    while True:
+        username = input(Fore.YELLOW + "Enter Username: ").strip()
+        phone = input(Fore.YELLOW + "Enter Phone Number (with no spaces): ").strip().replace(" ", "")
+        
+        # Check if username or phone number already exists
+        if username in data:
+            print(Fore.RED + f"Username {username} already exists.")
+        elif phone in data.values():
+            print(Fore.RED + f"Phone number {phone} already exists.")
+        else:
+            # Save the new data
+            data[username] = phone
+            save_data(data)
+            print(Fore.GREEN + "Account info added successfully!")
+        
+        # Ask if user wants to add another entry
+        continue_input = input(Fore.YELLOW + "Do you want to enter another account? (Y/N): ").strip().lower()
+        if continue_input != 'y':
+            break
 
 # Main function to display menu
 def main():
     while True:
         clear_screen()  # Clear screen at the beginning of each run
         display_banner()  # Display the banner
-        print(Fore.MAGENTA + "Safeum Account Info")
-        print(Fore.MAGENTA + "1. Display Account Info")
-        print(Fore.MAGENTA + "2. Upload Bulk Account Info (from bulk_input.txt)")
-        print(Fore.MAGENTA + "3. Search by Phone Number")
-        print(Fore.MAGENTA + "4. Manually Enter Account Info")
-        print(Fore.MAGENTA + "5. Exit")
+        print(Fore.GREEN + "Safeum Account Info")
+        print(Fore.GREEN + "1. Display Account Info")
+        print(Fore.GREEN + "2. Upload Bulk Account Info (from bulk_input.txt)")
+        print(Fore.GREEN + "3. Search by Phone Number")
+        print(Fore.GREEN + "4. Manually Enter Account Info")
+        print(Fore.GREEN + "5. Remove Account Info")
+        print(Fore.GREEN + "6. Exit")
         
         try:
-            choice = input(Fore.WHITE + "Choose an option (1/2/3/4/5): ").strip()
+            choice = input(Fore.WHITE + "Choose an option (1/2/3/4/5/6): ").strip()
             
             if choice == '1':
                 display_account_info()
@@ -144,6 +179,8 @@ def main():
             elif choice == '4':
                 manual_entry()
             elif choice == '5':
+                remove_data()
+            elif choice == '6':
                 print(Fore.GREEN + "Goodbye!")
                 break
             else:
