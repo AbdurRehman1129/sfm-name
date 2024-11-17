@@ -82,55 +82,66 @@ def upload_bulk_data():
     print(Fore.GREEN + f"Bulk data from {bulk_input_file} has been uploaded successfully!")
     input(Fore.WHITE + "\nPress Enter to return to the menu...")  # Wait for user to continue
 
-# Function to search by phone number(s)
+# Function to search by phone number or username
 def search_by_phone():
     data = load_data()
     
-    # Ask user for phone numbers
-    phone_numbers_input = input(Fore.YELLOW + "Enter phone numbers separated by commas: ").strip()
-    phone_numbers = [phone.strip().replace(" ", "") for phone in phone_numbers_input.split(',')]
-
-    found = False
-    for phone_number in phone_numbers:
-        # Search for the phone number in the data
-        for username, phone in data.items():
-            if phone == phone_number:
-                print(f"{Fore.GREEN}Phone number {phone_number} is associated with username: {Style.RESET_ALL}{username}")
-                found = True
-                break
+    while True:
+        # Ask user for phone numbers or username
+        search_input = input(Fore.YELLOW + "Enter Phone Number or Username to search: ").strip()
+        
+        found = False
+        # Check if the input is a username
+        if search_input in data:
+            print(f"{Fore.GREEN}Username {search_input} is associated with phone number: {Style.RESET_ALL}{data[search_input]}")
+            found = True
+        else:
+            # Check if the input is a phone number
+            for username, phone in data.items():
+                if phone == search_input:
+                    print(f"{Fore.GREEN}Phone number {search_input} is associated with username: {Style.RESET_ALL}{username}")
+                    found = True
+                    break
+        
         if not found:
-            print(Fore.RED + f"No account found for phone number {phone_number}")
-    
-    input(Fore.WHITE + "\nPress Enter to return to the menu...")  # Wait for user to continue
+            print(Fore.RED + f"No account found for {search_input}")
+        
+        # Ask if the user wants to search for another number or username
+        continue_search = input(Fore.YELLOW + "Do you want to search again? (Y/N): ").strip().lower()
+        if continue_search != 'y':
+            break  # Exit the loop and return to the main menu
 
 # Function to remove account data (by username or phone number)
 def remove_data():
     data = load_data()
     
-    # Ask user for username or phone number to remove
-    remove_input = input(Fore.YELLOW + "Enter Username or Phone Number to remove: ").strip()
-    
-    # Find and remove the account by username
-    if remove_input in data:
-        del data[remove_input]
-        save_data(data)
-        print(Fore.GREEN + f"Account with username/phone number {remove_input} has been removed.")
-    else:
-        # Check if any phone number matches
-        found = False
-        for username, phone in data.items():
-            if phone == remove_input:
-                del data[username]  # Remove account by username if phone number matches
-                save_data(data)
-                print(Fore.GREEN + f"Account with phone number {remove_input} has been removed.")
-                found = True
-                break
-        if not found:
-            print(Fore.RED + "No account found with the provided username/phone number.")
-    
-    input(Fore.WHITE + "\nPress Enter to return to the menu...")  # Wait for user to continue
+    while True:
+        # Ask user for username or phone number to remove
+        remove_input = input(Fore.YELLOW + "Enter Username or Phone Number to remove: ").strip()
+        
+        # Find and remove the account by username
+        if remove_input in data:
+            del data[remove_input]
+            save_data(data)
+            print(Fore.GREEN + f"Account with username/phone number {remove_input} has been removed.")
+        else:
+            # Check if any phone number matches
+            found = False
+            for username, phone in data.items():
+                if phone == remove_input:
+                    del data[username]  # Remove account by username if phone number matches
+                    save_data(data)
+                    print(Fore.GREEN + f"Account with phone number {remove_input} has been removed.")
+                    found = True
+                    break
+            if not found:
+                print(Fore.RED + "No account found with the provided username/phone number.")
+        
+        # Ask if the user wants to remove another account
+        continue_remove = input(Fore.YELLOW + "Do you want to remove another account? (Y/N): ").strip().lower()
+        if continue_remove != 'y':
+            break  # Exit the loop and return to the main menu
 
-# Function to manually enter username and phone number
 def manual_entry():
     data = load_data()
     
@@ -159,12 +170,12 @@ def main():
     while True:
         clear_screen()  # Clear screen at the beginning of each run
         display_banner()  # Display the banner
-        print(Fore.GREEN + "Safeum Account Info")
-        print(Fore.GREEN + "1. Display Account Info")
-        print(Fore.GREEN + "2. Upload Bulk Account Info (from bulk_input.txt)")
-        print(Fore.GREEN + "3. Search by Phone Number")
-        print(Fore.GREEN + "4. Manually Enter Account Info")
-        print(Fore.GREEN + "5. Remove Account Info")
+        print(Fore.CYAN + "MENU")
+        print(Fore.GREEN + "1. Display Accounts")
+        print(Fore.GREEN + "2. Upload Bulk Accounts")
+        print(Fore.GREEN + "3. Search by Phone Number or Username")
+        print(Fore.GREEN + "4. Manually Enter Account")
+        print(Fore.GREEN + "5. Remove Account")
         print(Fore.GREEN + "6. Exit")
         
         try:
