@@ -20,10 +20,14 @@ def clear_screen():
 def display_banner():
     banner = pyfiglet.Figlet(font="small")
     banner_text = banner.renderText("DARK DEVIL")
+    
+    # Center the banner text
     terminal_width = os.get_terminal_size().columns
     centered_banner = '\n'.join(line.center(terminal_width) for line in banner_text.splitlines())
     print(Fore.CYAN + centered_banner)
-    author_line = f"{Fore.YELLOW}Author/Github: {Style.RESET_ALL}{Fore.GREEN}@AbdurRehman1129"
+    
+    # Center the author line
+    author_line = f"Author/Github: {Fore.GREEN}@AbdurRehman1129"
     print(author_line.center(terminal_width))
 
 # Check if the safeum.json file exists, if not create an empty one
