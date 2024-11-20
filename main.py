@@ -27,7 +27,7 @@ def display_banner():
     print(Fore.CYAN + centered_banner)
     
     # Center the author line
-    author_line = f"{Fore.YELLOW}Author/Github: {Fore.GREEN}@AbdurRehman1129"
+    author_line = f"Author/Github: {Fore.GREEN}@AbdurRehman1129"
     print(author_line.center(terminal_width))
 
 # Check if the safeum.json file exists, if not create an empty one
