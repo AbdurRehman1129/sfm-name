@@ -2,7 +2,7 @@ import json
 import os
 import platform
 import pyfiglet
-from colorama import Fore, Back, Style, init
+from colorama import Fore, Style, init
 
 # Initialize colorama
 init(autoreset=True)
@@ -13,22 +13,15 @@ safeum_file = 'safeum.json'  # File to store data
 
 # Function to clear the terminal screen
 def clear_screen():
-    # Check the operating system and execute the appropriate command to clear the screen
     system_name = platform.system().lower()
-    
-    if system_name == 'windows':
-        os.system('cls')  # For Windows
-    else:
-        os.system('clear')  # For Linux/Termux/macOS
+    os.system('cls' if system_name == 'windows' else 'clear')
 
 # Function to display the banner
 def display_banner():
     banner = pyfiglet.Figlet(font="small")
     banner_text = banner.renderText("DARK DEVIL")
-    
     terminal_width = os.get_terminal_size().columns
     centered_banner = '\n'.join(line.center(terminal_width) for line in banner_text.splitlines())
-    
     print(Fore.CYAN + centered_banner)
     author_line = f"{Fore.YELLOW}Author/Github: {Style.RESET_ALL}{Fore.GREEN}@AbdurRehman1129"
     print(author_line.center(terminal_width))
@@ -48,139 +41,130 @@ def save_data(data):
     with open(safeum_file, 'w') as f:
         json.dump(data, f, indent=4)
 
-# Function to display stored account info
+# Function to display stored account info with numbering
 def display_account_info():
     data = load_data()
     if not data:
         print(Fore.RED + "No account info stored.")
     else:
-        for username, phone in data.items():
-            print(f"{Fore.GREEN}Username: {Style.RESET_ALL}{username} {Fore.YELLOW}Phone Number: {Style.RESET_ALL}{phone}")
+        print(Fore.CYAN + "Stored Accounts:")
+        for i, (username, phone) in enumerate(data.items(), start=1):
+            print(f"{Fore.YELLOW}{i}. {Fore.GREEN}Account: {Style.RESET_ALL}{username} {Fore.YELLOW}Phone: {Style.RESET_ALL}{phone}")
+    input(Fore.WHITE + "\nPress Enter to return to the menu...")  # Wait for user to continue
+
+# Function to display only phone numbers
+def display_phone_numbers():
+    data = load_data()
+    if not data:
+        print(Fore.RED + "No phone numbers stored.")
+    else:
+        print(Fore.CYAN + "Phone Numbers:")
+        for i, phone in enumerate(data.values(), start=1):
+            print(f"{Fore.YELLOW}{i}. {Fore.GREEN}{phone}")
     input(Fore.WHITE + "\nPress Enter to return to the menu...")  # Wait for user to continue
 
 # Function to upload bulk data from the bulk_input.txt file
 def upload_bulk_data():
-    # Check if the bulk_input.txt file exists
     if not os.path.exists(bulk_input_file):
         print(Fore.RED + f"{bulk_input_file} not found, please create this file with the data.")
-        input(Fore.WHITE + "\nPress Enter to return to the menu...")  # Wait for user to continue
+        input(Fore.WHITE + "\nPress Enter to return to the menu...")
         return
 
     data = load_data()
-
-    # Read the bulk_input.txt file and update the account info
     with open(bulk_input_file, 'r') as file:
         for line in file:
             line = line.strip()
             if '@' in line:
                 username, phone = line.split('@', 1)
-                data[username] = phone.replace(" ", "")  # Remove spaces from phone numbers
+                data[username] = phone.replace(" ", "")
             else:
                 print(Fore.RED + f"Skipping invalid line: {line}")
-
     save_data(data)
     print(Fore.GREEN + f"Bulk data from {bulk_input_file} has been uploaded successfully!")
-    input(Fore.WHITE + "\nPress Enter to return to the menu...")  # Wait for user to continue
+    input(Fore.WHITE + "\nPress Enter to return to the menu...")
 
 # Function to search by phone number or username
 def search_by_phone():
     data = load_data()
-    
     while True:
-        # Ask user for phone numbers or username
         search_input = input(Fore.YELLOW + "Enter Phone Number or Username to search: ").strip()
-        
         found = False
-        # Check if the input is a username
         if search_input in data:
             print(f"{Fore.GREEN}Username {search_input} is associated with phone number: {Style.RESET_ALL}{data[search_input]}")
             found = True
         else:
-            # Check if the input is a phone number
             for username, phone in data.items():
                 if phone == search_input:
                     print(f"{Fore.GREEN}Phone number {search_input} is associated with username: {Style.RESET_ALL}{username}")
                     found = True
                     break
-        
         if not found:
             print(Fore.RED + f"No account found for {search_input}")
-        
-        # Ask if the user wants to search for another number or username
-        continue_search = input(Fore.YELLOW + "Do you want to search again? (Y/N): ").strip().lower()
-        if continue_search != 'y':
-            break  # Exit the loop and return to the main menu
+        if input(Fore.YELLOW + "Do you want to search again? (Y/N): ").strip().lower() != 'y':
+            break
 
 # Function to remove account data (by username or phone number)
 def remove_data():
     data = load_data()
-    
     while True:
-        # Ask user for username or phone number to remove
         remove_input = input(Fore.YELLOW + "Enter Username or Phone Number to remove: ").strip()
-        
-        # Find and remove the account by username
         if remove_input in data:
             del data[remove_input]
             save_data(data)
-            print(Fore.GREEN + f"Account with username/phone number {remove_input} has been removed.")
+            print(Fore.GREEN + f"Account with username {remove_input} has been removed.")
         else:
-            # Check if any phone number matches
             found = False
             for username, phone in data.items():
                 if phone == remove_input:
-                    del data[username]  # Remove account by username if phone number matches
+                    del data[username]
                     save_data(data)
                     print(Fore.GREEN + f"Account with phone number {remove_input} has been removed.")
                     found = True
                     break
             if not found:
                 print(Fore.RED + "No account found with the provided username/phone number.")
-        
-        # Ask if the user wants to remove another account
-        continue_remove = input(Fore.YELLOW + "Do you want to remove another account? (Y/N): ").strip().lower()
-        if continue_remove != 'y':
-            break  # Exit the loop and return to the main menu
+        if input(Fore.YELLOW + "Do you want to remove another account? (Y/N): ").strip().lower() != 'y':
+            break
 
+# Function for manual entry
 def manual_entry():
     data = load_data()
-    
     while True:
         username = input(Fore.YELLOW + "Enter Username: ").strip()
-        phone = input(Fore.YELLOW + "Enter Phone Number (with no spaces): ").strip().replace(" ", "")
-        
-        # Check if username or phone number already exists
+        if not username:
+            print(Fore.RED + "Username cannot be empty. Please try again.")
+            continue
         if username in data:
-            print(Fore.RED + f"Username {username} already exists.")
-        elif phone in data.values():
-            print(Fore.RED + f"Phone number {phone} already exists.")
-        else:
-            # Save the new data
-            data[username] = phone
-            save_data(data)
-            print(Fore.GREEN + "Account info added successfully!")
-        
-        # Ask if user wants to add another entry
-        continue_input = input(Fore.YELLOW + "Do you want to enter another account? (Y/N): ").strip().lower()
-        if continue_input != 'y':
+            print(Fore.RED + f"Username {username} already exists. Please try another username.")
+            continue
+        phone = input(Fore.YELLOW + "Enter Phone Number: ").strip().replace(" ", "")
+        if not phone:
+            print(Fore.RED + "Phone number cannot be empty. Please try again.")
+            continue
+        if phone in data.values():
+            print(Fore.RED + f"Phone number {phone} already exists. Please try another phone number.")
+            continue
+        data[username] = phone
+        save_data(data)
+        print(Fore.GREEN + "Account info added successfully!")
+        if input(Fore.YELLOW + "Do you want to enter another account? (Y/N): ").strip().lower() != 'y':
             break
 
 # Main function to display menu
 def main():
     while True:
-        clear_screen()  # Clear screen at the beginning of each run
-        display_banner()  # Display the banner
+        clear_screen()
+        display_banner()
         print(Fore.CYAN + "MENU")
         print(Fore.GREEN + "1. Display Accounts")
         print(Fore.GREEN + "2. Upload Bulk Accounts")
         print(Fore.GREEN + "3. Search by Phone Number or Username")
         print(Fore.GREEN + "4. Manually Enter Account")
         print(Fore.GREEN + "5. Remove Account")
-        print(Fore.GREEN + "6. Exit")
-        
+        print(Fore.GREEN + "6. Display Phone Numbers")
+        print(Fore.GREEN + "7. Exit")
         try:
-            choice = input(Fore.WHITE + "Choose an option (1/2/3/4/5/6): ").strip()
-            
+            choice = input(Fore.WHITE + "Choose an option (1/2/3/4/5/6/7): ").strip()
             if choice == '1':
                 display_account_info()
             elif choice == '2':
@@ -192,20 +176,17 @@ def main():
             elif choice == '5':
                 remove_data()
             elif choice == '6':
+                display_phone_numbers()
+            elif choice == '7':
                 print(Fore.GREEN + "Goodbye!")
                 break
             else:
                 print(Fore.RED + "Invalid choice, please try again.")
-                input(Fore.WHITE + "\nPress Enter to return to the menu...")  # Wait for user to continue
         except Exception as e:
             print(Fore.RED + f"An error occurred: {e}")
-            input(Fore.WHITE + "\nPress Enter to return to the menu...")  # Wait for user to continue
+            input(Fore.WHITE + "\nPress Enter to return to the menu...")
 
 if __name__ == "__main__":
-    # Remove any initial example entry from the bulk_input.txt
     if not os.path.exists(bulk_input_file):
-        with open(bulk_input_file, 'w') as f:
-            pass  # Leave it empty for the user to upload data
-
-    # Start the main program
+        open(bulk_input_file, 'w').close()
     main()
