@@ -135,37 +135,39 @@ def manual_entry():
     data = load_data()
     
     while True:
-        # Get and validate the username
-        while True:
-            username = input(Fore.YELLOW + "Enter Username: ").strip()
-            if not username:
-                print(Fore.RED + "Username cannot be empty. Please enter a valid username.")
-            elif username in data:
-                print(Fore.RED + f"Username {username} already exists. Please enter a different username.")
-            else:
-                break  # Username is valid and unique
+        username = input(Fore.YELLOW + "Enter Username (or type 'NO' to stop): ").strip()
         
-        # Get and validate the phone number
-        while True:
-            phone = input(Fore.YELLOW + "Enter Phone Number: ").strip().replace(" ", "")
-            if not phone.isdigit():
-                print(Fore.RED + "Phone number must contain only numbers. Please try again.")
-            elif phone in data.values():
-                print(Fore.RED + f"Phone number {phone} already exists. Please enter a different number.")
-            elif not phone:
-                print(Fore.RED + "Phone number cannot be empty. Please try again.")
-            else:
-                break  # Phone number is valid and unique
-        
-        # Save the validated username and phone number
-        data[username] = phone
-        save_data(data)
-        print(Fore.GREEN + "Account info added successfully!")
-        
-        # Ask if user wants to add another entry
-        continue_input = input(Fore.YELLOW + "Do you want to enter another account? (Y/N): ").strip().lower()
-        if continue_input != 'y':
+        # Check if the user wants to stop
+        if username.lower() == 'no':
+            print(Fore.GREEN + "Exiting manual entry...")
             break
+        
+        # Ensure username is unique
+        if username in data:
+            print(Fore.RED + f"Username '{username}' already exists. Please enter a different username.")
+            continue
+        
+        while True:
+            try:
+                # Ask for phone number and validate input
+                phone = input(Fore.YELLOW + f"Enter Phone Number for '{username}': ").strip()
+                
+                # Ensure phone is a number and unique
+                if not phone.isdigit():
+                    print(Fore.RED + "Phone number must be numeric. Please try again.")
+                    continue
+                if phone in data.values():
+                    print(Fore.RED + f"Phone number '{phone}' already exists. Please enter a different number.")
+                    continue
+                
+                # Save valid username and phone
+                data[username] = phone
+                save_data(data)
+                print(Fore.GREEN + f"Account for username '{username}' and phone '{phone}' added successfully!")
+                break  # Exit the phone number input loop
+            except Exception as e:
+                print(Fore.RED + f"An error occurred: {e}. Please try again.")
+
 def format_numbers_for_email():
     """
     Formats and displays all phone numbers in a single comma-separated line,
