@@ -173,7 +173,7 @@ def manual_entry():
                 # Save valid username and phone
                 data[username] = phone
                 save_data(data)
-                print(Fore.GREEN + f"Account for {Fore.CYAN}'{username}' {Fore.GREEN}and phone {Fore.CYAN}'{phone}' added successfully!")
+                print(Fore.GREEN + f"Account for {Fore.CYAN}'{username}' {Fore.GREEN}and phone {Fore.CYAN}'{phone}' {Fore.GREEN}added successfully!")
                 break  # Exit the phone number input loop
             except Exception as e:
                 print(Fore.RED + f"An error occurred: {e}. Please try again.")
