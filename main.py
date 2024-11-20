@@ -129,34 +129,36 @@ def remove_data():
 # Function for manual entry
 def manual_entry():
     data = load_data()
-
+    
     while True:
-        # Ask for a username
+        # Get and validate the username
         while True:
             username = input(Fore.YELLOW + "Enter Username: ").strip()
             if not username:
-                print(Fore.RED + "Username cannot be empty. Please try again.")
+                print(Fore.RED + "Username cannot be empty. Please enter a valid username.")
             elif username in data:
-                print(Fore.RED + f"Username '{username}' already exists. Please enter another username.")
+                print(Fore.RED + f"Username {username} already exists. Please enter a different username.")
             else:
-                break
-
-        # Ask for a phone number
+                break  # Username is valid and unique
+        
+        # Get and validate the phone number
         while True:
             phone = input(Fore.YELLOW + "Enter Phone Number: ").strip().replace(" ", "")
-            if not phone:
-                print(Fore.RED + "Phone number cannot be empty. Please try again.")
+            if not phone.isdigit():
+                print(Fore.RED + "Phone number must contain only numbers. Please try again.")
             elif phone in data.values():
-                print(Fore.RED + f"Phone number '{phone}' already exists. Please enter another phone number.")
+                print(Fore.RED + f"Phone number {phone} already exists. Please enter a different number.")
+            elif not phone:
+                print(Fore.RED + "Phone number cannot be empty. Please try again.")
             else:
-                break
-
-        # Save the valid username and phone number
+                break  # Phone number is valid and unique
+        
+        # Save the validated username and phone number
         data[username] = phone
         save_data(data)
         print(Fore.GREEN + "Account info added successfully!")
-
-        # Ask if the user wants to add another account
+        
+        # Ask if user wants to add another entry
         continue_input = input(Fore.YELLOW + "Do you want to enter another account? (Y/N): ").strip().lower()
         if continue_input != 'y':
             break
