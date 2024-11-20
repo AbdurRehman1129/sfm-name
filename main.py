@@ -135,7 +135,13 @@ def manual_entry():
     data = load_data()
     
     while True:
-        username = input(Fore.YELLOW + "Enter Username (or type 'NO' to stop): ").strip()
+        username = input(
+            Fore.YELLOW + "Enter " +
+            Fore.CYAN + "Username" +
+            Fore.YELLOW + " (or type " +
+            Fore.RED + "'NO'" +
+            Fore.YELLOW + " to stop): "
+        ).strip()
         
         # Check if the user wants to stop
         if username.lower() == 'no':
@@ -150,7 +156,11 @@ def manual_entry():
         while True:
             try:
                 # Ask for phone number and validate input
-                phone = input(Fore.YELLOW + f"Enter Phone Number for '{username}': ").strip()
+                phone = input(
+                    Fore.YELLOW + f"Enter " +
+                    Fore.CYAN + "Phone Number" +
+                    Fore.YELLOW + f" for {Fore.CYAN}'{username}': "
+                ).strip()
                 
                 # Ensure phone is a number and unique
                 if not phone.isdigit():
@@ -163,10 +173,11 @@ def manual_entry():
                 # Save valid username and phone
                 data[username] = phone
                 save_data(data)
-                print(Fore.GREEN + f"Account for username '{username}' and phone '{phone}' added successfully!")
+                print(Fore.GREEN + f"Account for {Fore.CYAN}'{username}' {Fore.GREEN}and phone {Fore.CYAN}'{phone}' added successfully!")
                 break  # Exit the phone number input loop
             except Exception as e:
                 print(Fore.RED + f"An error occurred: {e}. Please try again.")
+
 
 def format_numbers_for_email():
     """
