@@ -166,22 +166,38 @@ def manual_entry():
         continue_input = input(Fore.YELLOW + "Do you want to enter another account? (Y/N): ").strip().lower()
         if continue_input != 'y':
             break
+def format_numbers_for_email():
+    """
+    Formats and displays all phone numbers in a single comma-separated line,
+    suitable for email sending.
+    """
+    data = load_data()
+    if not data:
+        print(Fore.RED + "No data available to format.")
+    else:
+        # Extract phone numbers and join them with commas
+        phone_numbers = ', '.join(data.values())
+        print(Fore.GREEN + "Phone numbers in email-sending format:\n")
+        print(Fore.YELLOW + phone_numbers)
+    input(Fore.WHITE + "\nPress Enter to return to the menu...")  # Wait for user to continue
 
 # Main function to display menu
 def main():
     while True:
-        clear_screen()
-        display_banner()
+        clear_screen()  # Clear screen at the beginning of each run
+        display_banner()  # Display the banner
         print(Fore.CYAN + "MENU")
         print(Fore.GREEN + "1. Display Accounts")
         print(Fore.GREEN + "2. Upload Bulk Accounts")
         print(Fore.GREEN + "3. Search by Phone Number or Username")
         print(Fore.GREEN + "4. Manually Enter Account")
         print(Fore.GREEN + "5. Remove Account")
-        print(Fore.GREEN + "6. Display Phone Numbers")
+        print(Fore.GREEN + "6. Display in Email-Sending Format")
         print(Fore.GREEN + "7. Exit")
+        
         try:
             choice = input(Fore.WHITE + "Choose an option (1/2/3/4/5/6/7): ").strip()
+            
             if choice == '1':
                 display_account_info()
             elif choice == '2':
@@ -193,15 +209,17 @@ def main():
             elif choice == '5':
                 remove_data()
             elif choice == '6':
-                display_phone_numbers()
+                format_numbers_for_email()
             elif choice == '7':
                 print(Fore.GREEN + "Goodbye!")
                 break
             else:
                 print(Fore.RED + "Invalid choice, please try again.")
+                input(Fore.WHITE + "\nPress Enter to return to the menu...")  # Wait for user to continue
         except Exception as e:
             print(Fore.RED + f"An error occurred: {e}")
-            input(Fore.WHITE + "\nPress Enter to return to the menu...")
+            input(Fore.WHITE + "\nPress Enter to return to the menu...")  # Wait for user to continue
+
 
 if __name__ == "__main__":
     if not os.path.exists(bulk_input_file):
