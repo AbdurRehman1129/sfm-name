@@ -27,7 +27,7 @@ def display_banner():
     print(Fore.CYAN + centered_banner)
     
     # Center the author line
-    author_line = f"Author/Github: {Fore.GREEN}@AbdurRehman1129"
+    author_line = f"{Fore.YELLOW}Author/Github: {Fore.GREEN}@AbdurRehman1129"
     print(author_line.center(terminal_width))
 
 # Check if the safeum.json file exists, if not create an empty one
@@ -186,14 +186,13 @@ def main():
     while True:
         clear_screen()  # Clear screen at the beginning of each run
         display_banner()  # Display the banner
-        print(Fore.CYAN + "MENU")
-        print(Fore.GREEN + "1. Display Accounts")
-        print(Fore.GREEN + "2. Upload Bulk Accounts")
-        print(Fore.GREEN + "3. Search by Phone Number or Username")
-        print(Fore.GREEN + "4. Manually Enter Account")
-        print(Fore.GREEN + "5. Remove Account")
-        print(Fore.GREEN + "6. Display in Email-Sending Format")
-        print(Fore.GREEN + "7. Exit")
+        print(Fore.YELLOW + "1." + Fore.GREEN + " Display Accounts")
+        print(Fore.YELLOW + "2." + Fore.GREEN + " Upload Bulk Accounts")
+        print(Fore.YELLOW + "3." + Fore.GREEN + " Search by Phone Number or Username")
+        print(Fore.YELLOW + "4." + Fore.GREEN + " Manually Enter Account")
+        print(Fore.YELLOW + "5." + Fore.GREEN + " Remove Account")
+        print(Fore.YELLOW + "6." + Fore.GREEN + " Display All Phone Numbers in Email-Sending Format")
+        print(Fore.YELLOW + "7." + Fore.GREEN + " Exit")
         
         try:
             choice = input(Fore.WHITE + "Choose an option (1/2/3/4/5/6/7): ").strip()
